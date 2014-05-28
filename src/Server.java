@@ -1,4 +1,5 @@
 import java.io.*;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.sql.SQLException;
@@ -18,13 +19,13 @@ import javax.swing.JOptionPane;
  */
 
 public class Server {
-	private int id;
+	private Integer id;
 	private ServerSocket listen;								// for accepting connections
 	private ArrayList<ClientHandler> handlers;					// all the connections with clients
 
 	DatabaseConnect db;
 
-	public Server(int id, ServerSocket listen, String database, String table) {
+	public Server(Integer id, ServerSocket listen, String database, String table) {
 		this.id=id;
 		this.listen = listen;
 		handlers = new ArrayList<ClientHandler>();
@@ -33,6 +34,10 @@ public class Server {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public Integer getId() {
+		return id;
 	}
 
 	/**
@@ -66,11 +71,12 @@ public class Server {
 	/**
 	 * Sends the message from the one client handler to all the others (but not echoing back to the originator)
 	 */
-	public synchronized void broadcast(ClientHandler from, String msg) {
+	public synchronized void broadcast(String msg, Vector<InetAddress> list) {
 		for (ClientHandler h : handlers) {
-			if (h != from) {
-				h.out.println(msg);
-			}
+			for(InetAddress member: list)
+				if (h.getSocket().getInetAddress() == member) {
+					h.out.println(msg);
+				}
 		}
 	}
 
@@ -123,6 +129,10 @@ public class Server {
 			this.sock = sock;
 			this.server = server;
 			Nodes = new Vector<Item>();
+		}
+		
+		public Socket getSocket(){
+			return sock;
 		}
 
 		public void run() {

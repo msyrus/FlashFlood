@@ -18,13 +18,13 @@ import javax.swing.JOptionPane;
  */
 
 public class XbeeServer {
-	private int id;
+	private Integer id;
 	private ServerSocket listen;								// for accepting connections
 	private ArrayList<ClientHandler> handlers;					// all the connections with clients
 
 	DatabaseConnect db;
 
-	public XbeeServer(int id, ServerSocket listen, String database, String table) {
+	public XbeeServer(Integer id, ServerSocket listen, String database, String table) {
 		this.id=id;
 		this.listen = listen;
 		handlers = new ArrayList<ClientHandler>();
@@ -33,6 +33,10 @@ public class XbeeServer {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public Integer getId() {
+		return id;
 	}
 
 	/**

@@ -54,26 +54,29 @@ public class Node {
 	
 	void buildNetwork() throws IOException{
 		for(Integer friend: friendsList){
-			Client client = new Client(ipList.elementAt(friend), 4242);
+			Client client = new Client(friend,ipList.elementAt(friend), 4242);
 			friends.add(client);
 		}
 		for(Integer neighbour: neighboursList){
-			Client client = new Client(ipList.elementAt(neighbour), 4242);
+			Client client = new Client(neighbour,ipList.elementAt(neighbour), 4242);
 			neighbours.add(client);
 		}
+		state = true;
 	}
 	
 	boolean addFriend(Integer id){
 		if (id == this.id) return false;
 		if(neighboursList.indexOf(id)!=-1) return false;
-		Client client;
-		try {
-			client = new Client(ipList.get(id), 4242);
-		} catch (IOException e) {
-			e.printStackTrace();
-			return false;
+		if(state){
+			Client client;
+			try {
+				client = new Client(id,ipList.get(id), 4242);
+			} catch (IOException e) {
+				e.printStackTrace();
+				return false;
+			}
+			friends.add(client);
 		}
-		friends.add(client);
 		friendsList.add(id);
 		return true;
 	}
@@ -81,18 +84,77 @@ public class Node {
 	boolean addNeighbour(Integer id){
 		if (id == this.id) return false;
 		if(friendsList.indexOf(id)!=-1) return false;
-		Client client;
-		try {
-			client = new Client(ipList.get(id), 4242);
-		} catch (IOException e) {
-			e.printStackTrace();
-			return false;
+		if(state){
+			Client client;
+			try {
+				client = new Client(id,ipList.get(id), 4242);
+			} catch (IOException e) {
+				e.printStackTrace();
+				return false;
+			}
+			neighbours.add(client);
 		}
-		neighbours.add(client);
 		neighboursList.add(id);
 		return true;
 	}
+	
+	void sendMsgToFriends(String msg){
+		if(!state) return;
+		Vector <InetAddress> flist = new Vector<InetAddress>(0);
+		for(Integer friend: friendsList)
+			flist.add(ipList.elementAt(friend));
+		
+		server.broadcast(msg, flist);
+	}
 
+	void sendMsgToNeighbours(String msg){
+		if(!state) return;
+		Vector <InetAddress> nlist = new Vector<InetAddress>(0);
+		for(Integer neighbour: neighboursList)
+			nlist.add(ipList.elementAt(neighbour));
+		
+		server.broadcast(msg, nlist);
+	}
+	
+	Vector<Pair> receiveMsg(){
+		Vector<Pair> msgs = new Vector<Pair>(0);
+		if(!state) return msgs;
+		for(Client friend: friends){
+			try {
+				if(!friend.ready2Read()) continue;
+				String msg = friend.readData();
+				if(msg.equals("")) continue;
+				Pair pair = new Pair(friend.getId(),msg);
+				msgs.add(pair);
+			} catch (IOException e) {
+				System.err.println("Unable to read from "+friend.getId());
+				e.printStackTrace();
+			}
+		}
+		
+		for(Client neighbour: neighbours){
+			try {
+				if(!neighbour.ready2Read()) continue;
+				String msg = neighbour.readData();
+				if(msg.equals("")) continue;
+				Pair pair = new Pair(neighbour.getId(),msg);
+				msgs.add(pair);
+			} catch (IOException e) {
+				System.err.println("Unable to read from "+neighbour.getId());
+				e.printStackTrace();
+			}
+		}
+		return msgs;
+	}
+	
+	Vector<Pair> getSensorData(){
+		
+	}
+	
+	boolean getNodeState(){
+		return state;
+	}
+	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 

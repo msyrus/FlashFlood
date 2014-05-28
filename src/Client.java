@@ -7,21 +7,25 @@ import java.net.Socket;
 
 
 public class Client {
+	int id;
 	private Socket clientSocket;
     PrintWriter out;
     BufferedReader in;
-    int count;
+    Integer count;
     
-	public Client(InetAddress ip, int port) throws IOException{
+	public Client(Integer Id, InetAddress ip, int port) throws IOException{
 
 		clientSocket = new Socket(ip, port);
 		System.out.println("I am: "+clientSocket.getLocalAddress()+" Connected to: "+clientSocket.getRemoteSocketAddress()+" Port :"+clientSocket.getLocalPort());
 		out = new PrintWriter(clientSocket.getOutputStream(), true);
     	in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 		count=0;
-		
+		id = Id;
 	}
 	
+	Integer getId(){
+		return id;
+	}
 	
 	public void sendLine(String str){
 		out.println(str);
@@ -37,7 +41,7 @@ public class Client {
     
     public String readData() throws IOException{
     	if(in.ready())
-    	return in.readLine();
+    		return in.readLine();
     	return "";
     }
     
@@ -55,7 +59,7 @@ public class Client {
 class Main2{
 
     public void main(String []args) throws IOException{
-    	Client client=new Client(InetAddress.getByName("localhost"), 4242);
+    	Client client=new Client(1,InetAddress.getByName("localhost"), 4242);
     	String line="";
     	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     	while(!line.equalsIgnoreCase("quit")){
