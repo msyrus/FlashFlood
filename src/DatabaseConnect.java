@@ -13,7 +13,7 @@ import java.util.logging.Logger;
  *
  * @author Syrus
  */
-@SuppressWarnings("unused")
+
 public class DatabaseConnect {
 	String connectionURL;
 	String QueryString;

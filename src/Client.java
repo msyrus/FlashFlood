@@ -2,31 +2,24 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.InetAddress;
 import java.net.Socket;
-import java.net.UnknownHostException;
 
 
-public class ChatClient {
+public class Client {
 	private Socket clientSocket;
     PrintWriter out;
     BufferedReader in;
     int count;
     
-	public ChatClient(String ip, int port){
+	public Client(InetAddress ip, int port) throws IOException{
 
-		try {
-			clientSocket = new Socket(ip, port);
-			System.out.println("This is :"+java.net.Inet4Address.getLocalHost()+" Sock :"+clientSocket.getLocalPort());
-			out = new PrintWriter(clientSocket.getOutputStream(), true);
-	    	in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-			count=0;
-		} catch (UnknownHostException e) {
-            System.err.println("Don't know about host: "+e.getMessage());
-			e.printStackTrace();
-		} catch (IOException e) {
-            System.err.println("Couldn't get I/O for the connection to: "+e.getMessage());
-			e.printStackTrace();
-		}
+		clientSocket = new Socket(ip, port);
+		System.out.println("I am: "+clientSocket.getLocalAddress()+" Connected to: "+clientSocket.getRemoteSocketAddress()+" Port :"+clientSocket.getLocalPort());
+		out = new PrintWriter(clientSocket.getOutputStream(), true);
+    	in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+		count=0;
+		
 	}
 	
 	
@@ -62,7 +55,7 @@ public class ChatClient {
 class Main2{
 
     public void main(String []args) throws IOException{
-    	ChatClient client=new ChatClient("localhost", 4242);
+    	Client client=new Client(InetAddress.getByName("localhost"), 4242);
     	String line="";
     	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     	while(!line.equalsIgnoreCase("quit")){

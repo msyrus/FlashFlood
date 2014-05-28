@@ -9,25 +9,23 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 /**
- * Multithreaded chat server
+ * Multithreaded chat xbeeServer
  * Clients connect on port 4242 and give their name
- * Then the server accepts input and broadcasts it to the other clients
- * Connect by running ChatClient.java
+ * Then the xbeeServer accepts input and broadcasts it to the other clients
+ * Connect by running Client.java
  * 
  * @author Syrus
  */
 
-public class Sever {
+public class XbeeServer {
 	private int id;
-	private int neighbours[];
 	private ServerSocket listen;								// for accepting connections
 	private ArrayList<ClientHandler> handlers;					// all the connections with clients
 
 	DatabaseConnect db;
 
-	public Sever(int id, int[] neighbours, ServerSocket listen, String database, String table) {
+	public XbeeServer(int id, ServerSocket listen, String database, String table) {
 		this.id=id;
-		this.neighbours=neighbours;
 		this.listen = listen;
 		handlers = new ArrayList<ClientHandler>();
 		try {
@@ -112,18 +110,18 @@ public class Sever {
 	}
 
 	/**
-	 * Handles communication between a server and one client
+	 * Handles communication between a xbeeServer and one client
 	 */
 	public class ClientHandler extends Thread {
 		private Socket sock;					// each instance is in a different thread and has its own socket
-		private Sever server;				// the main server instance
+		private XbeeServer xbeeServer;				// the main xbeeServer instance
 		private PrintWriter out;
 		public Vector<Item> Nodes;
 
-		public ClientHandler(Socket sock, Sever server) {
+		public ClientHandler(Socket sock, XbeeServer xbeeServer) {
 			super("ClientHandler");
 			this.sock = sock;
-			this.server = server;
+			this.xbeeServer = xbeeServer;
 			Nodes = new Vector<Item>();
 		}
 
@@ -155,14 +153,14 @@ public class Sever {
 							System.out.print(v.analogData[j]+" ");
 						System.out.println();
 
-						server.insertItem(this,v);
+						xbeeServer.insertItem(this,v);
 					}
 				}
 				// Done
 				System.out.println(" hung up");
 
-				// Clean up -- note that also remove self from server's list of handlers so it doesn't broadcast here
-				server.removeHandler(this);
+				// Clean up -- note that also remove self from xbeeServer's list of handlers so it doesn't broadcast here
+				xbeeServer.removeHandler(this);
 				out.close();
 				in.close();
 				sock.close();
@@ -175,6 +173,6 @@ public class Sever {
 
 	public static void main(String[] args) throws Exception {
 		System.out.println("waiting for connections");
-		new Sever(1, new int[] {2,3}, new ServerSocket(4242), "xbee", "firealarm").getConnections();
+		new XbeeServer(1, new ServerSocket(4242), "xbee", "flashflood").getConnections();
 	}
 }

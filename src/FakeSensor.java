@@ -1,14 +1,19 @@
 import java.io.IOException;
+import java.net.InetAddress;
 
 
 public class FakeSensor extends Thread{
 	private int sensorID, networkID, dIn, aIn, state, accuracy, delay;
 
-	ChatClient fakeClient;
+	Client fakeClient;
 	String data="7E";
 	String s[];
-	public FakeSensor(String ip, int port, int sID, int nID, int digital, int analog, int st, int acc, int delay){
-		fakeClient = new ChatClient(ip, port);
+	public FakeSensor(InetAddress ip, int port, int sID, int nID, int digital, int analog, int st, int acc, int delay){
+		try {
+			fakeClient = new Client(ip, port);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		sensorID = sID;
 		networkID = nID;
 		dIn = digital;
@@ -87,6 +92,7 @@ public class FakeSensor extends Thread{
 
 	public static void main(String[] args) throws IOException {
 
-		FakeSensor fc=new FakeSensor("localhost", 4242, 200, 200, 15, 0, 2, 50, 1000);
+		FakeSensor fc=new FakeSensor(InetAddress.getByName("localhost"), 4242, 200, 200, 15, 0, 2, 50, 1000);
+		fc.run();
 	}
 }
