@@ -36,7 +36,7 @@ public class Library {
 		return count;
 	}
 
-	public static XbeeData test(BufferedReader in) throws IOException{
+	public static XbeeData decode(BufferedReader in) throws IOException{
 		XbeeData V=new XbeeData();
 		String line;
 		int offset=0;

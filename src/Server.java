@@ -151,7 +151,7 @@ public class Server {
 				}
 				else{
 					while(sock.isConnected()){
-						XbeeData v=Library.test(in);
+						XbeeData v=Library.decode(in);
 						System.out.println("ID: "+v.id);
 
 						System.out.println("Digital Data :");
