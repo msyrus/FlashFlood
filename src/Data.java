@@ -1,8 +1,16 @@
 
-public class Item {
+public class Data {
 	Integer id, x, y, value[], count, mod;
 	boolean located;
-	Item(int i, Integer v[]){
+	Data(int i, String loc){
+		if(loc==null || loc.equalsIgnoreCase("")) return;
+		String tok[]=loc.split("[,]");
+		x=Integer.parseInt(tok[0]);
+		y=Integer.parseInt(tok[1]);
+		id = i;
+		located=true;
+	}
+	Data(int i, Integer v[]){
 		id=i;
 		value=v;
 		located=false;
@@ -10,7 +18,7 @@ public class Item {
 		mod=1;
 	}
 	
-	Item(int i, Integer v[], String loc){
+	Data(int i, Integer v[], String loc){
 		this(i,v);
 		if(loc==null || loc.equalsIgnoreCase("")) return;
 		String tok[]=loc.split("[,]");
@@ -19,11 +27,11 @@ public class Item {
 		located=true;
 	}
 
-	Item(int ii, String v, String loc){
+	Data(int ii, String v, String loc){
 		this(ii,new Integer[0],loc);
 		String tok[]=v.split("[,]");
 		value=new Integer[tok.length];
-		System.out.println("Item Value :");
+		System.out.println("Data Value :");
 		for(int i=0; i<value.length; i++){
 			System.out.print(tok[i]+",");
 			value[i]=Integer.parseInt(tok[i]);
@@ -49,6 +57,10 @@ public class Item {
 		value=x;
 	}
 	
+	public void setId(int i){
+		id = i;
+	}
+	
 	public void setValue(String v){
 		String tok[]=v.split("[,]");
 		value=new Integer[tok.length];
@@ -57,6 +69,10 @@ public class Item {
 	}
 	
 	public void updateValue(Integer[] x) {
+		if(value == null){
+			value = x;
+			return;
+		}
 		if(value.length!=x.length) return;
 		for(int i=0; i<value.length; i++)
 			value[i]+=x[i];

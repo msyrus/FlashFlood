@@ -97,11 +97,12 @@ public class Server {
 						data = from.Nodes.elementAt(i).getValue();
 						for(int j=0; j<data.length; j++)
 							out.print(data[j]+",");
+						out.println();
 					}catch (IOException e) {
 						//exception handling left as an exercise for the reader
 					}
-					break;
 				}
+				break;
 			}
 		if(!found){
 			JFrame frame = new JFrame("This is it");
@@ -110,7 +111,7 @@ public class Server {
 			String tok[] = str.split("[,]");
 			int x=Integer.parseInt(tok[0]);
 			int y=Integer.parseInt(tok[1]);
-			Item it=new Item(v.id, data, x+","+y);
+			Data it=new Data(v.id, data, x+","+y);
 			from.Nodes.addElement(it);
 		}
 	}
@@ -122,13 +123,13 @@ public class Server {
 		private Socket sock;					// each instance is in a different thread and has its own socket
 		private Server server;				// the main server instance
 		private PrintWriter out;
-		public Vector<Item> Nodes;
+		public Vector<Data> Nodes;
 
 		public ClientHandler(Socket sock, Server server) {
 			super("ClientHandler");
 			this.sock = sock;
 			this.server = server;
-			Nodes = new Vector<Item>();
+			Nodes = new Vector<Data>();
 		}
 		
 		public Socket getSocket(){

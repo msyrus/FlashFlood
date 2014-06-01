@@ -32,19 +32,19 @@ public class DatabaseConnect {
 		QueryString="";
 	}
 
-	public Item[] getItems()
+	public Data[] getItems()
 	{
 		try {
 			selectAll();
 			int x=updateQuery;
 			if(x==0) return null;
-			Item s[];
+			Data s[];
 			rs.beforeFirst();
-			s=new Item[x];
+			s=new Data[x];
 			int i=0;
 			while (rs.next()) {
 //				System.out.print("Retrived :"+rs.getInt("id"));
-				s[i++]=new Item( rs.getInt("id"),rs.getString("value"), rs.getString("location"));
+				s[i++]=new Data( rs.getInt("id"),rs.getString("value"), rs.getString("location"));
 			}
 			return s;
 		} catch (SQLException ex) {
@@ -53,10 +53,10 @@ public class DatabaseConnect {
 		}
 	}
 
-	public Item insertItem(Item it)
+	public Data insertItem(Data it)
 	{
 		try {
-			Item itm=findItem(it.getId());
+			Data itm=findItem(it.getId());
 			if(itm!=null){
 				updateItem(it);
 			}
@@ -73,9 +73,9 @@ public class DatabaseConnect {
 	}
 
 
-	public Item findItem(int id)
+	public Data findItem(int id)
 	{
-		Item t[]=getItems();
+		Data t[]=getItems();
 		if(t==null) return null;
 		for(int i=0; i<updateQuery; i++)
 			if(t[i].getId()==id) return t[i];
@@ -84,7 +84,7 @@ public class DatabaseConnect {
 
 	}
 
-	public int removeItem(Item it)
+	public int removeItem(Data it)
 	{
 		try {
 			int id=it.getId();
@@ -98,7 +98,7 @@ public class DatabaseConnect {
 		}
 	}
 
-	public int updateItem(Item it)
+	public int updateItem(Data it)
 	{
 		try {
 

@@ -77,41 +77,14 @@ public class XbeeServer {
 			}
 		}
 	}
-
-	/**
-	 * Insert or Update item in Database
-	 */
-	public synchronized void insertItem(ClientHandler from, XbeeData v){
-		boolean found=false;
-		Integer data[] = v.analogData;
-		if(data==null || data.length==0) return;
-		for(int i=0; i<from.Nodes.size(); i++)
-			if(from.Nodes.elementAt(i).getId()==v.id){
-				found=true;
-				from.Nodes.elementAt(i).updateValue(data);
-				if(from.Nodes.elementAt(i).getCount()==0) {
-					db.insertItem(from.Nodes.elementAt(i));
-					try(PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(""+from.Nodes.elementAt(i).getId(), true)))) {
-						data = from.Nodes.elementAt(i).getValue();
-						for(int j=0; j<data.length; j++)
-							out.print(data[j]+",");
-					}catch (IOException e) {
-						//exception handling left as an exercise for the reader
-					}
-					break;
-				}
-			}
-		if(!found){
-			JFrame frame = new JFrame("This is it");
-			frame.setVisible(true);
-			String str=JOptionPane.showInputDialog(frame, "Coordinate for Node"+(from.Nodes.size()+1), "Location", JOptionPane.QUESTION_MESSAGE);
-			String tok[] = str.split("[,]");
-			int x=Integer.parseInt(tok[0]);
-			int y=Integer.parseInt(tok[1]);
-			Item it=new Item(v.id, data, x+","+y);
-			from.Nodes.addElement(it);
-		}
+	
+	public synchronized Vector<Data> getData(){
+		Vector<Data> data = new Vector<Data>();
+		for(ClientHandler handler: handlers)
+			data.addElement(handler.sensorData);
+		return data;
 	}
+
 
 	/**
 	 * Handles communication between a xbeeServer and one client
@@ -120,15 +93,47 @@ public class XbeeServer {
 		private Socket sock;					// each instance is in a different thread and has its own socket
 		private XbeeServer xbeeServer;				// the main xbeeServer instance
 		private PrintWriter out;
-		public Vector<Item> Nodes;
+		public Data sensorData;
 
 		public ClientHandler(Socket sock, XbeeServer xbeeServer) {
 			super("ClientHandler");
 			this.sock = sock;
 			this.xbeeServer = xbeeServer;
-			Nodes = new Vector<Item>();
+			
+			JFrame frame = new JFrame("This is it");
+			frame.setVisible(true);
+			String str=JOptionPane.showInputDialog(frame, "Coordinate for SensorNode"+(xbeeServer.handlers.size()+1), "Location", JOptionPane.QUESTION_MESSAGE);
+			String tok[] = str.split("[,]");
+			int x = Integer.parseInt(tok[0]);
+			int y = Integer.parseInt(tok[1]);
+			sensorData = new Data(-1, x+","+y);
 		}
 
+		/**
+		 * Insert or Update item in Database
+		 */
+		public void insertXbeeData(XbeeData v){
+			Integer data[] = v.analogData;
+			if(data==null || data.length==0) return;
+			if(sensorData.getId()==-1)
+				sensorData.setId(v.id);
+			else if(sensorData.getId()!=v.id){
+				System.err.println("Error ID doesn't match.\n");
+				return;
+			}
+			sensorData.updateValue(data);
+			if(sensorData.getCount()==0) {
+				db.insertItem(sensorData);
+				try(PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(""+sensorData.getId(), true)))) {
+					data = sensorData.getValue();
+					for(int j=0; j<data.length; j++)
+						out.print(data[j]+",");
+				}catch (IOException e) {
+					//exception handling left as an exercise for the reader
+				}
+			}
+		}
+		
 		public void run() {
 			try {
 				System.out.println("someone connected");
@@ -157,7 +162,7 @@ public class XbeeServer {
 							System.out.print(v.analogData[j]+" ");
 						System.out.println();
 
-						xbeeServer.insertItem(this,v);
+						insertXbeeData(v);
 					}
 				}
 				// Done

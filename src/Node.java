@@ -47,7 +47,7 @@ public class Node {
 		server.getConnections();
 		
 		xbeeServer = new XbeeServer(id, new ServerSocket(4241), "xbee", "flashflood");
-		server.getConnections();
+		xbeeServer.getConnections();
 		
 		state = false;
 	}
@@ -64,7 +64,7 @@ public class Node {
 		state = true;
 	}
 	
-	boolean addFriend(Integer id){
+	synchronized boolean addFriend(Integer id){
 		if (id == this.id) return false;
 		if(neighboursList.indexOf(id)!=-1) return false;
 		if(state){
@@ -81,7 +81,7 @@ public class Node {
 		return true;
 	}
 	
-	boolean addNeighbour(Integer id){
+	synchronized boolean addNeighbour(Integer id){
 		if (id == this.id) return false;
 		if(friendsList.indexOf(id)!=-1) return false;
 		if(state){
@@ -98,7 +98,7 @@ public class Node {
 		return true;
 	}
 	
-	void sendMsgToFriends(String msg){
+	synchronized void sendMsgToFriends(String msg){
 		if(!state) return;
 		Vector <InetAddress> flist = new Vector<InetAddress>(0);
 		for(Integer friend: friendsList)
@@ -107,7 +107,7 @@ public class Node {
 		server.broadcast(msg, flist);
 	}
 
-	void sendMsgToNeighbours(String msg){
+	synchronized void sendMsgToNeighbours(String msg){
 		if(!state) return;
 		Vector <InetAddress> nlist = new Vector<InetAddress>(0);
 		for(Integer neighbour: neighboursList)
@@ -116,7 +116,7 @@ public class Node {
 		server.broadcast(msg, nlist);
 	}
 	
-	Vector<Pair> receiveMsg(){
+	synchronized Vector<Pair> receiveMsg(){
 		Vector<Pair> msgs = new Vector<Pair>(0);
 		if(!state) return msgs;
 		for(Client friend: friends){
@@ -147,8 +147,8 @@ public class Node {
 		return msgs;
 	}
 	
-	Vector<Pair> getSensorData(){
-		
+	synchronized Vector<Data> getSensorData(){
+		return xbeeServer.getData();
 	}
 	
 	boolean getNodeState(){
