@@ -30,7 +30,7 @@ public class Node {
 				throw new Exception();
 			}
 		}
-		
+		///******** Check and Remove Duplicate Elements from Friends and Neighbors *******///
 		if(FriendList.indexOf(Id)!=-1) throw new Exception();
 		if(NeighbourList.indexOf(Id)!=-1) throw new Exception();
 		
@@ -43,9 +43,9 @@ public class Node {
 		this.neighboursList = NeighbourList;
 		this.ipList = IpList;
 		
-		server = new Server(id, new ServerSocket(4242), "xbee", "flashflood");
+		server = new Server(id, new ServerSocket(4242));
 		server.start();
-		
+
 		xbeeServer = new XbeeServer(id, new ServerSocket(4241), "xbee", "flashflood");
 		xbeeServer.start();
 		
@@ -55,16 +55,26 @@ public class Node {
 	void buildNetwork() throws IOException{
 		for(Integer friend: friendsList){
 			Client client = new Client(friend,ipList.elementAt(friend), 4242);
+			System.out.println("\nWaiting for response from friend#"+friend+" ("+ipList.elementAt(friend)+")");
+			while (!client.ready2Read()) System.out.print('.');
+			String msg = client.readData();
+			if (msg.equalsIgnoreCase("Who?")) client.sendLine(""+id);
+			else System.err.println("Unexpected Msg: "+msg);
 			friends.add(client);
 		}
 		for(Integer neighbour: neighboursList){
 			Client client = new Client(neighbour,ipList.elementAt(neighbour), 4242);
+			System.out.println("\nWaiting for response from friend#"+neighbour+" ("+ipList.elementAt(neighbour)+")");
+			while (!client.ready2Read()) System.out.print('.');
+			String msg = client.readData();
+			if (msg.equalsIgnoreCase("Who?")) client.sendLine(""+id);
+			else System.err.println("Unexpected Msg: "+msg);
 			neighbours.add(client);
 		}
 		state = true;
 	}
 	
-	synchronized boolean addFriend(Integer id){
+	boolean addFriend(Integer id){
 		if (id == this.id) return false;
 		if(neighboursList.indexOf(id)!=-1) return false;
 		if(state){
@@ -81,7 +91,7 @@ public class Node {
 		return true;
 	}
 	
-	synchronized boolean addNeighbour(Integer id){
+	boolean addNeighbour(Integer id){
 		if (id == this.id) return false;
 		if(friendsList.indexOf(id)!=-1) return false;
 		if(state){
@@ -98,7 +108,7 @@ public class Node {
 		return true;
 	}
 	
-	synchronized void sendMsgToFriends(String msg){
+	void sendMsgToFriends(String msg){
 		if(!state) return;
 		Vector <InetAddress> flist = new Vector<InetAddress>(0);
 		for(Integer friend: friendsList)
@@ -107,7 +117,7 @@ public class Node {
 		server.broadcast(msg, flist);
 	}
 
-	synchronized void sendMsgToNeighbours(String msg){
+	void sendMsgToNeighbours(String msg){
 		if(!state) return;
 		Vector <InetAddress> nlist = new Vector<InetAddress>(0);
 		for(Integer neighbour: neighboursList)
@@ -116,7 +126,7 @@ public class Node {
 		server.broadcast(msg, nlist);
 	}
 	
-	synchronized Vector<Pair> receiveMsg(){
+	Vector<Pair> receiveMsg(){
 		Vector<Pair> msgs = new Vector<Pair>(0);
 		if(!state) return msgs;
 		for(Client friend: friends){
@@ -147,7 +157,7 @@ public class Node {
 		return msgs;
 	}
 	
-	synchronized Vector<Data> getSensorData(){
+	Vector<Data> getSensorData(){
 		return xbeeServer.getData();
 	}
 	
@@ -155,9 +165,17 @@ public class Node {
 		return state;
 	}
 	
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-
+	public static void main(String[] args) throws UnknownHostException {
+		Vector<Integer> friends = new Vector<Integer>();
+		friends.addElement(1);
+		friends.addElement(2);
+		Vector<Integer> neighbours = new Vector<Integer>();
+		neighbours.addElement(3);
+		neighbours.addElement(0);
+		Vector<InetAddress> ips = new Vector<InetAddress>();
+		ips.addElement(InetAddress.getByName("127.0.0.1"));
+//		ips.addElement();
+//		Node node = new Node(1,);
 	}
 
 }

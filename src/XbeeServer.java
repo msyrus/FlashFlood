@@ -1,3 +1,4 @@
+
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -58,6 +59,7 @@ public class XbeeServer extends Thread {
 			}
 		}
 	}
+	
 
 	/**
 	 * Adds the handler to the list of current client handlers
@@ -185,9 +187,4 @@ public class XbeeServer extends Thread {
 			}
 		}
 	}
-
-//	public static void main(String[] args) throws Exception {
-//		System.out.println("waiting for connections");
-//		new XbeeServer(1, new ServerSocket(4242), "xbee", "flashflood").run();
-//	}
 }
