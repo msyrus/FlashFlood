@@ -44,10 +44,10 @@ public class Node {
 		this.ipList = IpList;
 		
 		server = new Server(id, new ServerSocket(4242), "xbee", "flashflood");
-		server.getConnections();
+		server.start();
 		
 		xbeeServer = new XbeeServer(id, new ServerSocket(4241), "xbee", "flashflood");
-		xbeeServer.getConnections();
+		xbeeServer.start();
 		
 		state = false;
 	}

@@ -17,7 +17,7 @@ import javax.swing.JOptionPane;
  * @author Syrus
  */
 
-public class XbeeServer {
+public class XbeeServer extends Thread {
 	private Integer id;
 	private ServerSocket listen;								// for accepting connections
 	private ArrayList<ClientHandler> handlers;					// all the connections with clients
@@ -35,21 +35,27 @@ public class XbeeServer {
 		}
 	}
 	
-	public Integer getId() {
+	public Integer getServerId() {
 		return id;
 	}
 
 	/**
 	 * The usual loop of accepting connections and firing off new threads to handle them
 	 */
-	public void getConnections() throws IOException {
+	public void run() {
 		while (true) {
-			Socket sc=listen.accept();
-			sc.getInputStream();
-			ClientHandler handler = new ClientHandler(listen.accept(), this);
-			handler.setDaemon(true);
-			addHandler(handler);
-			handler.start();
+			Socket sc;
+			ClientHandler handler;
+			try {
+				sc=listen.accept();
+				sc.getInputStream();
+				handler = new ClientHandler(listen.accept(), this);
+				handler.setDaemon(true);
+				addHandler(handler);
+				handler.start();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -180,8 +186,8 @@ public class XbeeServer {
 		}
 	}
 
-	public static void main(String[] args) throws Exception {
-		System.out.println("waiting for connections");
-		new XbeeServer(1, new ServerSocket(4242), "xbee", "flashflood").getConnections();
-	}
+//	public static void main(String[] args) throws Exception {
+//		System.out.println("waiting for connections");
+//		new XbeeServer(1, new ServerSocket(4242), "xbee", "flashflood").run();
+//	}
 }
