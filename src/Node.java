@@ -44,10 +44,10 @@ public class Node {
 		this.ipList = IpList;
 		
 		server = new Server(id, new ServerSocket(4242));
-		server.start();
+		(new Thread(server)).start();
 
 		xbeeServer = new XbeeServer(id, new ServerSocket(4241), "xbee", "flashflood");
-		xbeeServer.start();
+		(new Thread(xbeeServer)).start();
 		
 		state = false;
 	}
@@ -165,17 +165,14 @@ public class Node {
 		return state;
 	}
 	
-	public static void main(String[] args) throws UnknownHostException {
+	public static void main(String[] args) throws ArrayIndexOutOfBoundsException, IOException, Exception {
 		Vector<Integer> friends = new Vector<Integer>();
-		friends.addElement(1);
-		friends.addElement(2);
 		Vector<Integer> neighbours = new Vector<Integer>();
-		neighbours.addElement(3);
-		neighbours.addElement(0);
 		Vector<InetAddress> ips = new Vector<InetAddress>();
-		ips.addElement(InetAddress.getByName("127.0.0.1"));
+		ips.addElement(InetAddress.getByName("localhost"));
 //		ips.addElement();
-//		Node node = new Node(1,);
+		Node node = new Node(1,friends,neighbours,ips);
+		node.buildNetwork();
 	}
 
 }

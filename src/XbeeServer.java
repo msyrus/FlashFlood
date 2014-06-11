@@ -18,7 +18,7 @@ import javax.swing.JOptionPane;
  * @author Syrus
  */
 
-public class XbeeServer extends Thread {
+public class XbeeServer implements Runnable {
 	private Integer id;
 	private ServerSocket listen;								// for accepting connections
 	private ArrayList<ClientHandler> handlers;					// all the connections with clients

@@ -92,7 +92,7 @@ public class FakeSensor extends Thread{
 
 	public static void main(String[] args) throws IOException {
 
-		FakeSensor fc=new FakeSensor(1,InetAddress.getByName("localhost"), 4242, 200, 200, 15, 0, 2, 50, 1000);
-		fc.run();
+		FakeSensor fc=new FakeSensor(1,InetAddress.getByName("localhost"), 4241, 200, 200, 15, 0, 2, 50, 1000);
+		fc.start();
 	}
 }

@@ -2,7 +2,6 @@ import java.io.*;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Vector;
 
@@ -15,7 +14,7 @@ import java.util.Vector;
  * @author Syrus
  */
 
-public class Server extends Thread{
+public class Server implements Runnable{
 	private Integer id;
 	private ServerSocket listen;								// for accepting connections
 	private ArrayList<ClientHandler> handlers;					// all the connections with clients
