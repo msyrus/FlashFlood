@@ -55,16 +55,11 @@ public class DatabaseConnect {
 
 	public Data insertItem(Data it)
 	{
-		try {
-			Data itm=findItem(it.getId());
-			if(itm!=null){
-				updateItem(it);
-			}
-			else{
-				QueryString = "INSERT INTO "+table+" (id,value,location) VALUES "+"('"+it.getId()+"','"+it.getValueToString()+"','"+it.getLocation()+"')";
-				int x=statement.executeUpdate(QueryString);
-				if(x==0) return null; 
-			}
+		try {	
+			QueryString = "INSERT INTO "+table+" (id,value,location) VALUES "+"('"+it.getId()+"','"+it.getValueToString()+"','"+it.getLocation()+"')";
+			int x=statement.executeUpdate(QueryString);
+			if(x==0) return null; 
+		
 			return findItem(it.getId());
 		} catch (SQLException ex) {
 			Logger.getLogger(DatabaseConnect.class.getName()).log(Level.SEVERE, null, ex);
