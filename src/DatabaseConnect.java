@@ -32,10 +32,10 @@ public class DatabaseConnect {
 		QueryString="";
 	}
 
-	public Data[] getItems()
+	public Data[] getItems(String constrain)
 	{
 		try {
-			selectAll();
+			selectAll(constrain);
 			int x=updateQuery;
 			if(x==0) return null;
 			Data s[];
@@ -70,13 +70,12 @@ public class DatabaseConnect {
 
 	public Data findItem(int id)
 	{
-		Data t[]=getItems();
+		Data t[]=getItems("`id` = "+id);
 		if(t==null) return null;
 		for(int i=0; i<updateQuery; i++)
 			if(t[i].getId()==id) return t[i];
 
 		return null;
-
 	}
 
 	public int removeItem(Data it)
@@ -108,10 +107,13 @@ public class DatabaseConnect {
 		}
 	}
 
-	public int selectAll()
+	public int selectAll(String constrain)
 	{
 		try {
-			QueryString = "SELECT * from "+table;
+			if(constrain.equalsIgnoreCase(""))
+				QueryString = "SELECT * from "+table;
+			else
+				QueryString = "SELECT * from "+table+" WHERE "+constrain;
 			rs = statement.executeQuery(QueryString);
 			rs.last();
 			updateQuery=rs.getRow();

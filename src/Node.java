@@ -164,15 +164,4 @@ public class Node {
 	boolean getNodeState(){
 		return state;
 	}
-	
-	public static void main(String[] args) throws ArrayIndexOutOfBoundsException, IOException, Exception {
-		Vector<Integer> friends = new Vector<Integer>();
-		Vector<Integer> neighbours = new Vector<Integer>();
-		Vector<InetAddress> ips = new Vector<InetAddress>();
-		ips.addElement(InetAddress.getByName("localhost"));
-//		ips.addElement();
-		Node node = new Node(1,friends,neighbours,ips);
-		node.buildNetwork();
-	}
-
 }
